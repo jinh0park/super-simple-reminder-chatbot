@@ -5,6 +5,7 @@ from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
 from pprint import pprint
 import json
+from threading import Thread
 
 def todo_list_maker(chat_id):
     r = requests.get('http://127.0.0.1:4000/data/user', params={'chat_id': chat_id})
@@ -64,6 +65,19 @@ def on_callback_query(msg):
         todo_list = todo_list_maker(chat_id)
         bot.sendMessage(chat_id, 'TODO LIST', reply_markup=todo_list)
 
+def thread_schedule():
+    while 1:
+        tm = time.gmtime(time.time())
+        if tm.tm_hour in [0, 4, 10, 14] and tm.tm_min == 00:
+            todo_list = todo_list_maker('9999999')
+            bot.sendMessage('9999999', 'TODO LIST', reply_markup=todo_list)
+        time.sleep(60)
+
+def thread_keepalive():
+    while 1:
+        bot.getMe()
+        time.sleep(59)
+
 if __name__ == '__main__':
     with open('token.json','r') as f:
         TOKEN = json.loads(f.read())['token']
@@ -72,9 +86,12 @@ if __name__ == '__main__':
                       'callback_query': on_callback_query}).run_as_thread()
     print('Listening ...')
 
+    t1 = Thread(target=thread_schedule)
+    t2 = Thread(target=thread_keepalive)
+    t1.daemon = True
+    t2.daemon = True
+    t1.start()
+    t2.start()
+
     while 1:
-        tm = time.gmtime(time.time())
-        if tm.tm_hour in [0, 4, 10, 14] and tm.tm_min == 0:
-            todo_list = todo_list_maker('1111')
-            bot.sendMessage('1111', 'TODO LIST', reply_markup=todo_list)
-        time.sleep(60)
+        time.sleep(10)
