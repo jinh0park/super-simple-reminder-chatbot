@@ -73,4 +73,8 @@ if __name__ == '__main__':
     print('Listening ...')
 
     while 1:
-        time.sleep(10)
+        tm = time.gmtime(time.time())
+        if tm.tm_hour in [0, 4, 10, 14] and tm.tm_min == 0:
+            todo_list = todo_list_maker('1111')
+            bot.sendMessage('1111', 'TODO LIST', reply_markup=todo_list)
+        time.sleep(60)
