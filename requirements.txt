@@ -16,6 +16,6 @@ rsa==3.4.2
 s3transfer==0.1.13
 telepot==12.7
 typing-extensions==3.7.2
-urllib3==1.24.1
+urllib3==1.26.5
 wincertstore==0.2
 yarl==1.3.0
